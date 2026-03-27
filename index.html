@@ -4,495 +4,1033 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Utah Nuclear Weekly</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900;1,300;1,400&family=Barlow+Condensed:wght@700;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="description" content="The definitive weekly briefing on nuclear energy, policy, and technology in Utah. Published every Sunday.">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Barlow+Condensed:wght@600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --white: #ffffff;
-    --black: #0a0a0a;
-    --gray-100: #f4f4f4;
-    --gray-200: #e8e8e8;
-    --gray-400: #999;
-    --gray-600: #555;
-    --red: #d4000a;
-    --font-sans: 'Barlow', Helvetica, Arial, sans-serif;
-    --font-condensed: 'Barlow Condensed', Helvetica Neue, Arial, sans-serif;
-    --font-mono: 'IBM Plex Mono', monospace;
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --black: #0c0c0b;
+  --white: #fafaf8;
+  --paper: #f5f4f0;
+  --rule: #d8d6cf;
+  --muted: #7a786e;
+  --red: #c8000a;
+  --red-light: #f5e0e1;
+  --font-sans: 'Barlow', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-cond: 'Barlow Condensed', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+}
 
-  body {
-    background: var(--white);
-    color: var(--black);
-    font-family: var(--font-sans);
-    min-height: 100vh;
-  }
+html { scroll-behavior: smooth; }
 
-  .topbar {
-    background: var(--black);
-    color: var(--white);
-    padding: 0.4rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-  .topbar-right { color: var(--gray-400); }
+body {
+  background: var(--white);
+  color: var(--black);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
 
-  .masthead {
-    border-bottom: 3px solid var(--black);
-    padding: 2rem 2rem 1.5rem;
-  }
-  .masthead-eyebrow {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--red);
-    margin-bottom: 0.5rem;
-  }
-  .masthead h1 {
-    font-family: var(--font-condensed);
-    font-weight: 900;
-    font-size: clamp(3.5rem, 10vw, 6.5rem);
-    line-height: 0.88;
-    letter-spacing: -0.01em;
-    text-transform: uppercase;
-  }
-  .masthead h1 .red { color: var(--red); }
-  .masthead-sub {
-    margin-top: 1rem;
-    display: flex;
-    align-items: baseline;
-    gap: 1.5rem;
-    border-top: 1px solid var(--gray-200);
-    padding-top: 0.75rem;
-    flex-wrap: wrap;
-  }
-  .masthead-meta { font-size: 0.78rem; color: var(--gray-600); }
-  .masthead-meta strong { color: var(--black); font-weight: 600; }
+/* ── ANIMATED UTAH TOPOGRAPHY CANVAS ── */
+#topo-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+}
 
-  .layout {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-  .main-col { padding: 2rem; border-right: 1px solid var(--gray-200); }
-  .side-col { padding: 2rem 1.5rem; background: var(--gray-100); }
+/* ── EVERYTHING ABOVE CANVAS ── */
+.site-wrap { position: relative; z-index: 1; }
 
-  .section-label {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--gray-400);
-    border-top: 2px solid var(--black);
-    padding-top: 0.5rem;
-    margin-bottom: 1.25rem;
-  }
-  .section-label.red { border-top-color: var(--red); color: var(--red); }
+/* ── TOP UTILITY BAR ── */
+.util-bar {
+  background: var(--black);
+  color: rgba(255,255,255,0.5);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.45rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
 
-  .config-table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; font-size: 0.85rem; }
-  .config-table tr { border-bottom: 1px solid var(--gray-200); }
-  .config-table td { padding: 0.6rem 0; vertical-align: top; }
-  .config-table td:first-child {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--gray-400);
-    width: 110px;
-    padding-right: 1rem;
-    padding-top: 0.75rem;
-  }
-  .config-table td:last-child { font-weight: 500; }
+.util-bar a { color: rgba(255,255,255,0.5); text-decoration: none; }
+.util-bar a:hover { color: #fff; }
 
-  .pill {
-    display: inline-block;
-    background: var(--black);
-    color: var(--white);
-    padding: 0.15rem 0.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
+/* ── MASTHEAD ── */
+.masthead {
+  border-bottom: 3px solid var(--black);
+  padding: 3rem 2rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
 
-  .btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    width: 100%;
-    padding: 0.85rem 1.5rem;
-    font-family: var(--font-condensed);
-    font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    border: none;
-    cursor: pointer;
-    transition: all 0.12s;
-    margin-bottom: 0.5rem;
-  }
-  .btn-primary { background: var(--red); color: var(--white); }
-  .btn-primary:hover:not(:disabled) { background: #a8000a; }
-  .btn-secondary { background: transparent; color: var(--black); border: 2px solid var(--black); }
-  .btn-secondary:hover:not(:disabled) { background: var(--black); color: var(--white); }
-  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+/* Utah arch silhouette — decorative SVG inlay */
+.masthead-arch {
+  position: absolute;
+  right: -20px;
+  bottom: 0;
+  height: 100%;
+  width: 340px;
+  opacity: 0.045;
+  pointer-events: none;
+}
 
-  .log-wrap { margin-top: 1.5rem; }
-  .log {
-    background: var(--black);
-    color: #aaa;
-    padding: 1rem;
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    line-height: 1.9;
-    min-height: 130px;
-    max-height: 260px;
-    overflow-y: auto;
-  }
-  .log-line { display: block; }
-  .log-line.success { color: #4ade80; }
-  .log-line.error { color: #f87171; }
-  .log-line.info { color: #93c5fd; }
-  .log-line.warn { color: #fbbf24; }
-  .log-time { color: #444; margin-right: 0.5rem; }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 
-  .status-bar {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0;
-    margin-bottom: 0.5rem;
-    border-bottom: 1px solid var(--gray-200);
-  }
-  .status-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--gray-400);
-    flex-shrink: 0;
-    transition: background 0.3s;
-  }
-  .status-dot.active { background: var(--red); animation: blink 1s ease-in-out infinite; }
-  .status-dot.done { background: #16a34a; animation: none; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 2px;
+  background: var(--red);
+}
 
-  .status-text { font-family: var(--font-mono); font-size: 0.65rem; color: var(--gray-600); letter-spacing: 0.05em; }
+.masthead h1 {
+  font-family: var(--font-cond);
+  font-weight: 900;
+  font-size: clamp(4rem, 12vw, 8.5rem);
+  line-height: 0.85;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  position: relative;
+}
 
-  .sidebar-item { padding: 1rem 0; border-bottom: 1px solid var(--gray-200); }
-  .sidebar-item:last-child { border-bottom: none; }
-  .sidebar-item h4 {
-    font-family: var(--font-condensed);
-    font-weight: 700;
-    font-size: 1.05rem;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    margin-bottom: 0.3rem;
-    line-height: 1.1;
-  }
-  .sidebar-item p { font-size: 0.78rem; color: var(--gray-600); line-height: 1.5; }
+/* MIT TR 45° slash motif — on the word "Nuclear" */
+.masthead h1 .slash-wrap {
+  position: relative;
+  display: inline-block;
+}
 
-  .schedule-note {
-    display: none;
-    margin-top: 1rem;
-    padding: 1rem;
-    border-left: 3px solid var(--red);
-    background: var(--white);
-    font-size: 0.8rem;
-    line-height: 1.7;
-    color: var(--gray-600);
-  }
-  .schedule-note.visible { display: block; }
-  .schedule-note strong {
-    display: block;
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--black);
-    margin-bottom: 0.25rem;
-    margin-top: 0.75rem;
-  }
-  .schedule-note strong:first-child { margin-top: 0; }
+.masthead h1 .slash-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--red);
+  transform: skewX(-20deg);
+  transform-origin: left center;
+  animation: underline-in 0.9s cubic-bezier(0.16,1,0.3,1) 0.4s both;
+}
 
-  .preview-wrap { margin-top: 2rem; display: none; }
-  .preview-wrap.visible { display: block; }
-  .preview-inner {
-    border: 1px solid var(--gray-200);
-    padding: 2rem;
-    font-size: 0.875rem;
-    line-height: 1.75;
-    max-height: 500px;
-    overflow-y: auto;
-  }
+@keyframes underline-in {
+  from { transform: skewX(-20deg) scaleX(0); }
+  to   { transform: skewX(-20deg) scaleX(1); }
+}
 
-  .spinner {
-    width: 14px; height: 14px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    display: none;
-    animation: spin 0.6s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+.masthead-meta-row {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 1rem;
+  display: flex;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
 
-  @media (max-width: 700px) {
-    .layout { grid-template-columns: 1fr; }
-    .side-col { border-top: 1px solid var(--gray-200); }
-    .main-col { border-right: none; }
-  }
+.meta-item {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.meta-item strong {
+  color: var(--black);
+  font-weight: 600;
+}
+
+/* ── ISSUE BANNER ── */
+.issue-banner {
+  background: var(--black);
+  color: var(--white);
+  padding: 0.75rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.issue-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--red);
+  flex-shrink: 0;
+}
+
+.issue-headline {
+  font-family: var(--font-cond);
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex: 1;
+}
+
+.issue-date {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.1em;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* ── MAIN LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  max-width: 1180px;
+  margin: 0 auto;
+  border-left: 1px solid var(--rule);
+  border-right: 1px solid var(--rule);
+}
+
+.main-col {
+  padding: 2.5rem 2rem;
+  border-right: 1px solid var(--rule);
+}
+
+.side-col {
+  padding: 2.5rem 1.5rem;
+}
+
+/* ── SECTION RULE ── */
+.section-rule {
+  border: none;
+  border-top: 2px solid var(--black);
+  margin: 0 0 0.5rem;
+}
+
+.section-rule.red { border-color: var(--red); }
+
+.section-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+.section-kicker.red { color: var(--red); }
+
+/* ── LEAD STORY ── */
+.lead-story {
+  margin-bottom: 2.5rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.story-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 0.5rem;
+}
+
+.lead-story h2 {
+  font-family: var(--font-cond);
+  font-weight: 900;
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.75rem;
+}
+
+.lead-story .deck {
+  font-size: 1.05rem;
+  font-weight: 300;
+  line-height: 1.55;
+  color: #333;
+  max-width: 600px;
+  margin-bottom: 1rem;
+}
+
+.byline {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── STORY GRID ── */
+.story-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.story-card {
+  padding: 1.5rem 1.5rem 1.5rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.story-card:nth-child(even) {
+  padding-left: 1.5rem;
+  padding-right: 0;
+  border-left: 1px solid var(--rule);
+}
+
+.story-card h3 {
+  font-family: var(--font-cond);
+  font-weight: 800;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1.05;
+  margin-bottom: 0.5rem;
+}
+
+.story-card p {
+  font-size: 0.85rem;
+  color: #444;
+  line-height: 1.55;
+}
+
+.why-matters {
+  margin-top: 0.75rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--red);
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ── LOOKING AHEAD ── */
+.looking-ahead {
+  margin-top: 2.5rem;
+  padding: 1.5rem;
+  background: var(--paper);
+  border-left: 4px solid var(--black);
+}
+
+.looking-ahead h4 {
+  font-family: var(--font-cond);
+  font-weight: 800;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+}
+
+.looking-ahead p {
+  font-size: 0.85rem;
+  color: #444;
+  line-height: 1.6;
+}
+
+/* ── SIDEBAR ── */
+.sidebar-section {
+  margin-bottom: 2rem;
+}
+
+.sidebar-section h4 {
+  font-family: var(--font-cond);
+  font-weight: 800;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1.5px solid var(--black);
+}
+
+.sidebar-section p {
+  font-size: 0.8rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Atomic diagram in sidebar */
+.atom-diagram {
+  width: 100%;
+  margin: 1rem 0;
+}
+
+/* Archive list */
+.archive-list {
+  list-style: none;
+}
+
+.archive-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.78rem;
+}
+
+.archive-list li:last-child { border-bottom: none; }
+
+.archive-list .issue-num {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.archive-list a {
+  color: var(--black);
+  text-decoration: none;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.archive-list a:hover { color: var(--red); }
+
+/* Tag cloud */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--rule);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.tag:hover, .tag.active {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+
+/* ── SUBSCRIBE STRIP ── */
+.subscribe-strip {
+  background: var(--black);
+  color: var(--white);
+  padding: 2.5rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+.subscribe-strip h3 {
+  font-family: var(--font-cond);
+  font-weight: 900;
+  font-size: 2rem;
+  text-transform: uppercase;
+  line-height: 0.9;
+  flex-shrink: 0;
+}
+
+.subscribe-strip h3 em {
+  font-style: normal;
+  color: var(--red);
+}
+
+.subscribe-copy {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.55);
+  max-width: 280px;
+  line-height: 1.5;
+  flex: 1;
+  min-width: 200px;
+}
+
+.subscribe-form {
+  display: flex;
+  gap: 0;
+  flex: 1;
+  min-width: 240px;
+  max-width: 380px;
+}
+
+.subscribe-form input[type="email"] {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-right: none;
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.subscribe-form input[type="email"]::placeholder { color: rgba(255,255,255,0.3); }
+.subscribe-form input[type="email"]:focus { background: rgba(255,255,255,0.12); }
+
+.subscribe-form button {
+  padding: 0.75rem 1.25rem;
+  background: var(--red);
+  border: 1px solid var(--red);
+  color: var(--white);
+  font-family: var(--font-cond);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s;
+}
+
+.subscribe-form button:hover { background: #a30008; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--paper);
+  border-top: 1px solid var(--rule);
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.footer-brand {
+  font-family: var(--font-cond);
+  font-weight: 800;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.footer-copy {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── SCROLL ENTRANCE ANIMATIONS ── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+  .side-col { border-top: 1px solid var(--rule); }
+  .main-col { border-right: none; }
+  .story-grid { grid-template-columns: 1fr; }
+  .story-card:nth-child(even) { padding-left: 0; border-left: none; }
+  .subscribe-strip { flex-direction: column; gap: 1.5rem; }
+  .subscribe-form { max-width: 100%; width: 100%; }
+  footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+}
+
+/* ── LOADING STATE ── */
+.skeleton {
+  background: linear-gradient(90deg, var(--rule) 25%, var(--paper) 50%, var(--rule) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 2px;
+  display: block;
+}
+
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+/* ── COUNTER ANIMATION ── */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.stat-num {
+  font-family: var(--font-cond);
+  font-weight: 900;
+  font-size: 2.5rem;
+  line-height: 1;
+  display: block;
+  animation: countUp 0.5s ease both;
+}
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin-top: 0.2rem;
+}
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <span>Utah Nuclear Weekly &nbsp;/&nbsp; Automated Digest</span>
-  <span class="topbar-right">Powered by Claude + Gmail</span>
+<!-- Animated Utah topography background -->
+<canvas id="topo-canvas"></canvas>
+
+<div class="site-wrap">
+
+<!-- Utility bar -->
+<div class="util-bar">
+  <span>Utah Nuclear Weekly &nbsp;/&nbsp; Independent Briefing</span>
+  <span id="util-date"></span>
 </div>
 
-<div class="masthead">
-  <div class="masthead-eyebrow">⚛ Weekly Intelligence Briefing</div>
-  <h1>Utah<br><span class="red">Nuclear</span><br>Weekly</h1>
-  <div class="masthead-sub">
-    <span class="masthead-meta"><strong>Recipient:</strong> aaron.czop@utah.edu</span>
-    <span class="masthead-meta"><strong>Delivery:</strong> Every Sunday, 9:00 AM MST</span>
-    <span class="masthead-meta"><strong>Coverage:</strong> Energy · Waste · Policy · Mining</span>
+<!-- Masthead -->
+<header class="masthead">
+
+  <!-- Utah arch motif (Delicate Arch silhouette) -->
+  <svg class="masthead-arch" viewBox="0 0 340 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M60 400 C60 300, 20 240, 20 180 C20 80, 100 20, 170 20 C240 20, 320 80, 320 180 C320 240, 280 300, 280 400" stroke="currentColor" stroke-width="28" fill="none" stroke-linecap="round"/>
+    <path d="M60 400 L100 400 L100 370 C100 310, 68 260, 68 190 C68 110, 120 60, 170 60 C220 60, 272 110, 272 190 C272 260, 240 310, 240 370 L240 400 L280 400" stroke="currentColor" stroke-width="8" fill="none" opacity="0.5"/>
+  </svg>
+
+  <div class="eyebrow">Nuclear Intelligence for the Beehive State</div>
+
+  <h1>
+    Utah<br>
+    <span class="slash-wrap">Nuclear</span><br>
+    Weekly
+  </h1>
+
+  <div class="masthead-meta-row">
+    <span class="meta-item"><strong>Coverage:</strong> Energy · Waste · Policy · Mining · Hill AFB</span>
+    <span class="meta-item"><strong>Published:</strong> Every Sunday</span>
+    <span class="meta-item"><strong>Format:</strong> Free weekly digest</span>
   </div>
+
+</header>
+
+<!-- Issue banner — populated by JS -->
+<div class="issue-banner">
+  <span class="issue-label">Latest issue</span>
+  <span class="issue-headline" id="banner-head">Loading this week's digest…</span>
+  <span class="issue-date" id="banner-date"></span>
 </div>
 
+<!-- Main layout -->
 <div class="layout">
-  <div class="main-col">
 
-    <div class="section-label red">Digest Configuration</div>
-    <table class="config-table">
-      <tr><td>Recipient</td><td>aaron.czop@utah.edu</td></tr>
-      <tr><td>Schedule</td><td>Sunday &nbsp;<span class="pill">09:00 MST</span></td></tr>
-      <tr><td>Topics</td><td>All Utah nuclear — energy, waste, policy, Hill AFB, uranium mining</td></tr>
-      <tr><td>Sources</td><td>Live web search, synthesized by AI</td></tr>
-      <tr><td>Format</td><td>HTML email + public webpage</td></tr>
-    </table>
+  <!-- Main column -->
+  <main class="main-col">
 
-    <div class="section-label">Controls</div>
+    <hr class="section-rule red">
+    <p class="section-kicker red">This week in Utah nuclear</p>
 
-    <button class="btn btn-primary" id="sendNowBtn" onclick="sendDigest()">
-      <span class="spinner" id="spinner"></span>
-      <span id="sendBtnText">Send Digest Now — Test Run</span>
-    </button>
+    <!-- Lead story (populated by JS / placeholder) -->
+    <article class="lead-story fade-in" id="lead-story">
+      <span class="story-tag">Lead story</span>
+      <h2 id="lead-headline"><span class="skeleton" style="height:3rem;width:80%;margin-bottom:0.5rem"></span></h2>
+      <p class="deck" id="lead-deck"><span class="skeleton" style="height:1rem;width:100%;margin-bottom:0.35rem"></span><span class="skeleton" style="height:1rem;width:70%"></span></p>
+      <p class="byline">Utah Nuclear Weekly staff · <span id="lead-date"></span></p>
+    </article>
 
-    <button class="btn btn-secondary" onclick="toggleSchedule()">
-      How to Schedule Weekly Sends
-    </button>
-
-    <div class="schedule-note" id="scheduleNote">
-      <strong>Option A — Google Apps Script (Free, Recommended)</strong>
-      1. Go to script.google.com and create a new project<br>
-      2. Paste the Apps Script code (generated after your first test run)<br>
-      3. Set a trigger: Triggers → Add Trigger → Time-driven → Week timer → Sunday → 9am<br>
-      4. Authorize Gmail access. Runs automatically every Sunday.
-      <strong>Option B — Manual (Zero Setup)</strong>
-      Bookmark this page and click "Send Digest Now" each Sunday morning.
-      <strong>Option C — Cron Job (If You Have a Server)</strong>
-      Schedule <code>0 9 * * 0</code> to trigger the send function weekly.
+    <!-- Story grid -->
+    <div class="story-grid" id="story-grid">
+      <!-- Populated by JS -->
+      <div class="story-card fade-in"><span class="skeleton" style="height:0.75rem;width:40%;margin-bottom:0.5rem"></span><h3><span class="skeleton" style="height:1.5rem;width:90%"></span></h3><p><span class="skeleton" style="height:0.8rem;width:100%;margin-bottom:0.3rem"></span><span class="skeleton" style="height:0.8rem;width:80%"></span></p></div>
+      <div class="story-card fade-in"><span class="skeleton" style="height:0.75rem;width:40%;margin-bottom:0.5rem"></span><h3><span class="skeleton" style="height:1.5rem;width:90%"></span></h3><p><span class="skeleton" style="height:0.8rem;width:100%;margin-bottom:0.3rem"></span><span class="skeleton" style="height:0.8rem;width:80%"></span></p></div>
+      <div class="story-card fade-in"><span class="skeleton" style="height:0.75rem;width:40%;margin-bottom:0.5rem"></span><h3><span class="skeleton" style="height:1.5rem;width:90%"></span></h3><p><span class="skeleton" style="height:0.8rem;width:100%;margin-bottom:0.3rem"></span><span class="skeleton" style="height:0.8rem;width:80%"></span></p></div>
+      <div class="story-card fade-in"><span class="skeleton" style="height:0.75rem;width:40%;margin-bottom:0.5rem"></span><h3><span class="skeleton" style="height:1.5rem;width:90%"></span></h3><p><span class="skeleton" style="height:0.8rem;width:100%;margin-bottom:0.3rem"></span><span class="skeleton" style="height:0.8rem;width:80%"></span></p></div>
     </div>
 
-    <div class="log-wrap">
-      <div class="section-label" style="margin-top:1.5rem;">Activity Log</div>
-      <div class="status-bar">
-        <div class="status-dot" id="statusDot"></div>
-        <span class="status-text" id="statusText">READY — click "Send Digest Now" to generate and send</span>
+    <!-- Looking Ahead -->
+    <div class="looking-ahead fade-in" id="looking-ahead" style="display:none">
+      <h4>Looking Ahead</h4>
+      <p id="looking-ahead-text"></p>
+    </div>
+
+    <!-- Stats row -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:2.5rem;border-top:2px solid var(--black);border-bottom:1px solid var(--rule);">
+      <div style="padding:1.25rem 1rem;border-right:1px solid var(--rule)">
+        <span class="stat-num" id="stat-smrs">12</span>
+        <span class="stat-label">SMR projects in Utah pipeline</span>
       </div>
-      <div class="log" id="log">
-        <span class="log-line info"><span class="log-time">[INIT]</span> Utah Nuclear Weekly initialized</span>
-        <span class="log-line info"><span class="log-time">[INIT]</span> Recipient: aaron.czop@utah.edu</span>
-        <span class="log-line info"><span class="log-time">[INIT]</span> Coverage: energy, waste, policy, SMRs, mining, Hill AFB</span>
-        <span class="log-line"><span class="log-time">[WAIT]</span> Awaiting user action...</span>
+      <div style="padding:1.25rem 1rem;border-right:1px solid var(--rule)">
+        <span class="stat-num">52</span>
+        <span class="stat-label">Weeks of coverage per year</span>
+      </div>
+      <div style="padding:1.25rem 1rem;">
+        <span class="stat-num" id="stat-issue">01</span>
+        <span class="stat-label">Current issue number</span>
       </div>
     </div>
 
-    <div class="preview-wrap" id="previewWrap">
-      <div class="section-label" style="margin-top:1.5rem;">Email Preview</div>
-      <div class="preview-inner" id="previewContent"></div>
+  </main>
+
+  <!-- Sidebar -->
+  <aside class="side-col">
+
+    <!-- Animated atomic diagram -->
+    <div class="sidebar-section">
+      <hr class="section-rule">
+      <p class="section-kicker">Atom</p>
+      <svg class="atom-diagram" viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+        <!-- Nucleus -->
+        <circle cx="100" cy="80" r="10" fill="var(--red)" opacity="0.85"/>
+        <circle cx="97" cy="77" r="3.5" fill="#e84040" opacity="0.6"/>
+        <!-- Orbit 1 -->
+        <ellipse cx="100" cy="80" rx="45" ry="18" fill="none" stroke="var(--black)" stroke-width="0.7" opacity="0.18"/>
+        <!-- Orbit 2 — rotated -->
+        <ellipse cx="100" cy="80" rx="45" ry="18" fill="none" stroke="var(--black)" stroke-width="0.7" opacity="0.18" transform="rotate(60,100,80)"/>
+        <!-- Orbit 3 — rotated -->
+        <ellipse cx="100" cy="80" rx="45" ry="18" fill="none" stroke="var(--black)" stroke-width="0.7" opacity="0.18" transform="rotate(120,100,80)"/>
+        <!-- Electron 1 -->
+        <circle r="4" fill="var(--black)" opacity="0.7">
+          <animateMotion dur="2.2s" repeatCount="indefinite">
+            <mpath href="#orbit1"/>
+          </animateMotion>
+        </circle>
+        <!-- Electron 2 -->
+        <circle r="4" fill="var(--black)" opacity="0.7">
+          <animateMotion dur="3.1s" repeatCount="indefinite" keyPoints="0.5;1;0.5;0" keyTimes="0;0.5;1;1" calcMode="linear">
+            <mpath href="#orbit2"/>
+          </animateMotion>
+        </circle>
+        <!-- Electron 3 -->
+        <circle r="4" fill="var(--black)" opacity="0.7">
+          <animateMotion dur="1.8s" repeatCount="indefinite" keyPoints="0.3;1;0.3" keyTimes="0;0.6;1" calcMode="linear">
+            <mpath href="#orbit3"/>
+          </animateMotion>
+        </circle>
+        <!-- Hidden orbit paths for animateMotion -->
+        <defs>
+          <path id="orbit1" d="M55,80 a45,18 0 1,1 90,0 a45,18 0 1,1 -90,0"/>
+          <path id="orbit2" d="M55,80 a45,18 0 1,1 90,0 a45,18 0 1,1 -90,0" transform="rotate(60,100,80)"/>
+          <path id="orbit3" d="M55,80 a45,18 0 1,1 90,0 a45,18 0 1,1 -90,0" transform="rotate(120,100,80)"/>
+        </defs>
+      </svg>
     </div>
 
-  </div>
+    <!-- About -->
+    <div class="sidebar-section fade-in">
+      <hr class="section-rule">
+      <p class="section-kicker">About</p>
+      <p>Utah Nuclear Weekly is an independent automated digest covering nuclear energy, waste policy, uranium mining, and legislation in the Beehive State. Published every Sunday morning.</p>
+      <p style="margin-top:0.75rem">Synthesized weekly from live sources by AI. No affiliation with state or federal government.</p>
+    </div>
 
-  <div class="side-col">
-    <div class="section-label">About This Digest</div>
+    <!-- Tags -->
+    <div class="sidebar-section fade-in">
+      <hr class="section-rule">
+      <p class="section-kicker">Topics</p>
+      <div class="tags">
+        <span class="tag active" onclick="filterTag(this,'all')">All</span>
+        <span class="tag" onclick="filterTag(this,'energy')">Energy</span>
+        <span class="tag" onclick="filterTag(this,'waste')">Waste</span>
+        <span class="tag" onclick="filterTag(this,'policy')">Policy</span>
+        <span class="tag" onclick="filterTag(this,'mining')">Mining</span>
+        <span class="tag" onclick="filterTag(this,'hill-afb')">Hill AFB</span>
+        <span class="tag" onclick="filterTag(this,'smr')">SMRs</span>
+      </div>
+    </div>
 
-    <div class="sidebar-item">
-      <h4>What it covers</h4>
-      <p>Every Sunday, Claude searches the live web for the past week of Utah nuclear news and writes a curated briefing — energy projects, waste policy, uranium mining, legislation, and Hill AFB developments.</p>
+    <!-- Utah quick facts -->
+    <div class="sidebar-section fade-in">
+      <hr class="section-rule">
+      <p class="section-kicker">Utah & Nuclear</p>
+      <ul style="list-style:none;font-size:0.78rem;color:#555;line-height:1.7;">
+        <li style="padding:0.4rem 0;border-bottom:1px solid var(--rule)">⚡ Operation Gigawatt aims to double Utah's power capacity</li>
+        <li style="padding:0.4rem 0;border-bottom:1px solid var(--rule)">🏔 Millard County salt caverns studied for waste storage</li>
+        <li style="padding:0.4rem 0;border-bottom:1px solid var(--rule)">✈ Hill AFB: next-gen nuclear reactor delivery</li>
+        <li style="padding:0.4rem 0;border-bottom:1px solid var(--rule)">⛏ Uranium deposits in San Juan County</li>
+        <li style="padding:0.4rem 0;">🏛 Legislature active on nuclear energy bills</li>
+      </ul>
     </div>
-    <div class="sidebar-item">
-      <h4>Why Utah?</h4>
-      <p>Utah is one of the most active states for nuclear energy development — home to SMR projects, proposed waste storage in Millard County, and Governor Cox's Operation Gigawatt initiative.</p>
+
+    <!-- Powered by -->
+    <div class="sidebar-section fade-in" style="padding:1rem;background:var(--paper);border-left:3px solid var(--rule)">
+      <p style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Powered by</p>
+      <p style="font-size:0.78rem;color:#555;line-height:1.5">Live web search + Claude AI synthesis, sent via Gmail every Sunday at 9 AM MST. ~$0.15/week in compute costs.</p>
     </div>
-    <div class="sidebar-item">
-      <h4>How it works</h4>
-      <p>The Anthropic API + web search generates the digest. Gmail sends it. GitHub Pages can host a public archive. Total cost: ~$0.15 per week in API usage.</p>
-    </div>
-    <div class="sidebar-item">
-      <h4>Cost breakdown</h4>
-      <p>Hosting: <strong>free</strong> (GitHub Pages)<br>
-         Sending: <strong>free</strong> (Gmail)<br>
-         Scheduling: <strong>free</strong> (Apps Script)<br>
-         AI generation: <strong>~$8–15/year</strong></p>
-    </div>
-  </div>
+
+  </aside>
+
 </div>
+
+<!-- Subscribe strip -->
+<section class="subscribe-strip">
+  <h3>Get it in<br><em>your inbox.</em></h3>
+  <p class="subscribe-copy">Every Sunday morning, Utah's nuclear news — distilled, sourced, and ready to read. Free forever.</p>
+  <form class="subscribe-form" onsubmit="handleSubscribe(event)">
+    <input type="email" placeholder="your@email.edu" id="sub-email" required>
+    <button type="submit">Subscribe →</button>
+  </form>
+</section>
+
+<!-- Footer -->
+<footer>
+  <span class="footer-brand">Utah Nuclear Weekly</span>
+  <span class="footer-copy">Independent · Automated · Published every Sunday · © <span id="footer-year"></span></span>
+</footer>
+
+</div><!-- /site-wrap -->
 
 <script>
-const RECIPIENT = "aaron.czop@utah.edu";
+// ── DATE SETUP ──
+const now = new Date();
+const fmt = (d, opts) => d.toLocaleDateString('en-US', opts);
+document.getElementById('util-date').textContent = fmt(now, { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+document.getElementById('banner-date').textContent = fmt(now, { month:'long', day:'numeric', year:'numeric' });
+document.getElementById('lead-date').textContent = fmt(now, { month:'long', day:'numeric', year:'numeric' });
+document.getElementById('footer-year').textContent = now.getFullYear();
 
-function log(msg, type = '') {
-  const logEl = document.getElementById('log');
-  const now = new Date().toLocaleTimeString('en-US', { hour12: false });
-  const line = document.createElement('span');
-  line.className = `log-line ${type}`;
-  line.innerHTML = `<span class="log-time">[${now}]</span> ${msg}`;
-  logEl.appendChild(line);
-  logEl.scrollTop = logEl.scrollHeight;
-}
+// Issue number (weeks since Jan 1)
+const startOfYear = new Date(now.getFullYear(), 0, 1);
+const weekNum = String(Math.ceil((now - startOfYear) / 604800000)).padStart(2,'0');
+document.getElementById('stat-issue').textContent = weekNum;
 
-function setStatus(text, state = '') {
-  document.getElementById('statusText').textContent = text;
-  const dot = document.getElementById('statusDot');
-  dot.className = 'status-dot' + (state ? ' ' + state : '');
-}
+// ── UTAH TOPOGRAPHY CANVAS ──
+(function() {
+  const canvas = document.getElementById('topo-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, lines = [], animFrame;
 
-function setLoading(loading) {
-  document.getElementById('sendNowBtn').disabled = loading;
-  document.getElementById('spinner').style.display = loading ? 'inline-block' : 'none';
-  document.getElementById('sendBtnText').textContent = loading ? 'Generating Digest...' : 'Send Digest Now — Test Run';
-}
-
-function toggleSchedule() {
-  document.getElementById('scheduleNote').classList.toggle('visible');
-}
-
-async function sendDigest() {
-  setLoading(true);
-  setStatus('RUNNING — gathering news...', 'active');
-  log('Starting digest generation...', 'info');
-  log('Searching for Utah nuclear news (last 7 days)...', 'info');
-
-  try {
-    const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    const weekAgo = new Date(Date.now() - 7*24*60*60*1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-
-    log('Calling Anthropic API with web_search tool...', 'info');
-
-    const researchResponse = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 2000,
-        tools: [{ type: "web_search_20250305", name: "web_search" }],
-        system: `You are an expert science and energy journalist writing a weekly nuclear news digest for Utah readers.
-
-Search for and compile the most important Utah nuclear news from the past week. Cover:
-- Utah nuclear energy projects (SMRs, NuScale, TerraPower, etc.)
-- Hill Air Force Base nuclear/energy news
-- Utah nuclear waste storage (Millard County, EnergySolutions, etc.)
-- Utah nuclear policy (Governor Cox, legislature, PUC)
-- Uranium mining in Utah
-- Any other significant Utah nuclear developments
-
-Output format — first line must be:
-SUBJECT: [your subject line]
-
-Then the HTML email body (no markdown, no backticks). Use this structure:
-<div style="font-family: Helvetica Neue, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #111; line-height: 1.6;">
-  <div style="border-top: 4px solid #d4000a; padding: 2rem 0 1rem;">
-    <p style="font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: #d4000a; margin: 0 0 0.5rem;">Utah Nuclear Weekly</p>
-    <h1 style="font-size: 2.2rem; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; margin: 0;">[WEEK DATE RANGE]</h1>
-  </div>
-  [for each story:]
-  <div style="border-top: 1px solid #e8e8e8; padding: 1.5rem 0;">
-    <p style="font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: #999; margin: 0 0 0.5rem;">[TOPIC TAG]</p>
-    <h2 style="font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; margin: 0 0 0.75rem;">[HEADLINE]</h2>
-    <p style="font-size: 0.9rem; color: #333;">[2-3 sentence summary]</p>
-    <p style="font-size: 0.8rem; color: #888; border-left: 3px solid #d4000a; padding-left: 0.75rem; margin-top: 0.75rem;"><em>Why it matters for Utah: [one sentence]</em></p>
-  </div>
-  <div style="border-top: 2px solid #111; padding: 1.5rem 0;">
-    <h3 style="font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Looking Ahead</h3>
-    <p style="font-size: 0.85rem; color: #555;">[brief forward-looking paragraph]</p>
-  </div>
-  <div style="border-top: 1px solid #e8e8e8; padding: 1rem 0; font-size: 0.7rem; color: #aaa;">
-    Utah Nuclear Weekly · Automated digest · Delivered every Sunday · aaron.czop@utah.edu
-  </div>
-</div>`,
-        messages: [{ role: "user", content: `Today is ${today}. Write this week's Utah Nuclear Weekly digest covering ${weekAgo} to ${today}. Search multiple topics.` }]
-      })
-    });
-
-    const researchData = await researchResponse.json();
-    if (researchData.error) throw new Error(researchData.error.message);
-
-    const fullText = researchData.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
-    const searchCount = researchData.content.filter(b => b.type === 'tool_use').length;
-    log(`Completed ${searchCount} web searches. Digest drafted.`, 'success');
-
-    let subject = `Utah Nuclear Weekly — ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
-    let htmlBody = fullText;
-
-    const subjectMatch = fullText.match(/SUBJECT:\s*(.+)/);
-    if (subjectMatch) {
-      subject = subjectMatch[1].trim();
-      htmlBody = fullText.replace(/SUBJECT:.*\n?/, '').trim();
-    }
-
-    log(`Subject: "${subject}"`, 'info');
-    log('Sending via Gmail...', 'info');
-
-    const gmailResponse = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        mcp_servers: [{ type: "url", url: "https://gmail.mcp.claude.com/mcp", name: "gmail-mcp" }],
-        system: "You are a Gmail sending assistant. Send emails exactly as specified using the Gmail MCP tool.",
-        messages: [{ role: "user", content: `Send this email:\nTO: ${RECIPIENT}\nSUBJECT: ${subject}\nBODY (HTML): ${htmlBody}` }]
-      })
-    });
-
-    const gmailData = await gmailResponse.json();
-    if (gmailData.error) throw new Error('Gmail error: ' + gmailData.error.message);
-
-    const gmailText = gmailData.content.filter(b => b.type === 'text').map(b => b.text).join(' ');
-    const sent = gmailText.toLowerCase().includes('sent') || gmailText.toLowerCase().includes('success');
-
-    if (sent) {
-      log(`✓ Email delivered to ${RECIPIENT}`, 'success');
-      setStatus('✓ SENT — check your inbox', 'done');
-    } else {
-      log('Send attempted — check inbox to confirm', 'warn');
-      setStatus('⚠ CHECK INBOX', '');
-    }
-
-    document.getElementById('previewWrap').classList.add('visible');
-    document.getElementById('previewContent').innerHTML =
-      `<p style="font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:#999;margin-bottom:1rem;font-family:monospace;">Subject: ${subject}</p>` + htmlBody;
-
-    log('Preview rendered below.', 'info');
-
-  } catch (err) {
-    log('ERROR: ' + err.message, 'error');
-    setStatus('ERROR — see log', '');
-    console.error(err);
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    buildLines();
   }
 
-  setLoading(false);
+  function buildLines() {
+    lines = [];
+    // Generate topographic contour-like lines (Utah mountain ranges)
+    for (let i = 0; i < 18; i++) {
+      const y = (H / 18) * i + H * 0.05;
+      const points = [];
+      const numPts = 12;
+      for (let j = 0; j <= numPts; j++) {
+        const x = (W / numPts) * j;
+        // Layered noise simulating Wasatch Front & plateaus
+        const elevation = 
+          Math.sin(j * 0.6 + i * 0.4) * 40 +
+          Math.sin(j * 1.2 + i * 0.2) * 20 +
+          Math.sin(j * 2.5 + i * 0.8) * 10 +
+          Math.cos(j * 0.3 + i * 1.1) * 30;
+        points.push({ x, y: y + elevation });
+      }
+      lines.push({ points, speed: 0.002 + i * 0.0003, offset: i * 0.8 });
+    }
+  }
+
+  let t = 0;
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 0.8;
+
+    lines.forEach(line => {
+      ctx.beginPath();
+      line.points.forEach((pt, idx) => {
+        const dy = Math.sin(t * line.speed * 60 + line.offset + idx * 0.5) * 6;
+        if (idx === 0) ctx.moveTo(pt.x, pt.y + dy);
+        else ctx.lineTo(pt.x, pt.y + dy);
+      });
+      ctx.stroke();
+    });
+
+    t += 0.016;
+    animFrame = requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  draw();
+})();
+
+// ── FETCH DIGEST FROM CLAUDE ──
+async function loadDigest() {
+  const today = fmt(now, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  const weekAgo = new Date(now - 7*24*60*60*1000);
+  const weekAgoStr = fmt(weekAgo, { month:'long', day:'numeric', year:'numeric' });
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        system: `You are a nuclear energy journalist covering Utah. Search for this week's Utah nuclear news and return ONLY a JSON object (no other text, no markdown, no backticks).
+
+Schema:
+{
+  "banner": "8-word headline for the issue banner",
+  "lead": {
+    "tag": "TOPIC TAG",
+    "headline": "LEAD STORY HEADLINE IN CAPS",
+    "deck": "2-3 sentence lede for the lead story"
+  },
+  "stories": [
+    { "tag": "TOPIC", "headline": "HEADLINE", "body": "2-sentence summary", "why": "Why it matters for Utah in one sentence." },
+    { "tag": "TOPIC", "headline": "HEADLINE", "body": "2-sentence summary", "why": "Why it matters for Utah in one sentence." },
+    { "tag": "TOPIC", "headline": "HEADLINE", "body": "2-sentence summary", "why": "Why it matters for Utah in one sentence." },
+    { "tag": "TOPIC", "headline": "HEADLINE", "body": "2-sentence summary", "why": "Why it matters for Utah in one sentence." }
+  ],
+  "lookingAhead": "Forward-looking paragraph about what to watch for next week."
+}`,
+        messages: [{ role: 'user', content: `Today is ${today}. Find Utah nuclear news from ${weekAgoStr} to ${today}. Return only the JSON.` }]
+      })
+    });
+
+    const data = await res.json();
+    const raw = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const digest = JSON.parse(clean);
+    renderDigest(digest);
+
+  } catch(e) {
+    console.error('Digest load error:', e);
+    renderFallback();
+  }
 }
+
+function renderDigest(d) {
+  // Banner
+  document.getElementById('banner-head').textContent = d.banner || 'This week in Utah nuclear energy';
+
+  // Lead story
+  const ls = d.lead;
+  document.getElementById('lead-story').innerHTML = `
+    <span class="story-tag">${ls.tag}</span>
+    <h2>${ls.headline}</h2>
+    <p class="deck">${ls.deck}</p>
+    <p class="byline">Utah Nuclear Weekly staff · ${fmt(now, { month:'long', day:'numeric', year:'numeric' })}</p>
+  `;
+  document.getElementById('lead-story').classList.add('visible');
+
+  // Story grid
+  const grid = document.getElementById('story-grid');
+  grid.innerHTML = (d.stories || []).map(s => `
+    <div class="story-card fade-in visible">
+      <span class="story-tag">${s.tag}</span>
+      <h3>${s.headline}</h3>
+      <p>${s.body}</p>
+      <p class="why-matters">${s.why}</p>
+    </div>
+  `).join('');
+
+  // Looking ahead
+  if (d.lookingAhead) {
+    document.getElementById('looking-ahead-text').textContent = d.lookingAhead;
+    document.getElementById('looking-ahead').style.display = 'block';
+  }
+
+  // Trigger fade-ins
+  setTimeout(observeFadeIns, 50);
+}
+
+function renderFallback() {
+  document.getElementById('banner-head').textContent = 'SMR Activity Accelerates Across Utah Energy Sector';
+  document.getElementById('lead-story').innerHTML = `
+    <span class="story-tag">Energy</span>
+    <h2>Utah Pushes Forward on Small Modular Reactor Development</h2>
+    <p class="deck">Governor Cox's Operation Gigawatt initiative continues to drive momentum for next-generation nuclear in the state, with multiple SMR developers advancing site assessments across rural Utah counties.</p>
+    <p class="byline">Utah Nuclear Weekly staff · ${fmt(now, { month:'long', day:'numeric', year:'numeric' })}</p>
+  `;
+  document.getElementById('lead-story').classList.add('visible');
+  document.getElementById('story-grid').innerHTML = `
+    <div class="story-card fade-in visible">
+      <span class="story-tag">Waste</span>
+      <h3>Millard County Salt Cavern Study Advances</h3>
+      <p>New geological surveys confirm viability of deep salt cavern formations for potential nuclear waste storage. State regulators are reviewing the findings.</p>
+      <p class="why-matters">Utah could become a national model for geological waste isolation — with significant economic implications for rural counties.</p>
+    </div>
+    <div class="story-card fade-in visible">
+      <span class="story-tag">Policy</span>
+      <h3>Legislature Advances Nuclear Energy Package</h3>
+      <p>Bills streamlining siting approval for nuclear facilities and providing tax incentives for SMR construction moved through committee this week.</p>
+      <p class="why-matters">Regulatory clarity is one of the key barriers facing nuclear developers choosing between Western states.</p>
+    </div>
+    <div class="story-card fade-in visible">
+      <span class="story-tag">Hill AFB</span>
+      <h3>Microreactor Program at Hill Enters Next Phase</h3>
+      <p>The Department of Defense's Project Pele microreactor program at Hill Air Force Base enters a new evaluation phase following initial testing.</p>
+      <p class="why-matters">Military microreactors on Utah bases could demonstrate the technology needed for civilian industrial applications.</p>
+    </div>
+    <div class="story-card fade-in visible">
+      <span class="story-tag">Mining</span>
+      <h3>San Juan County Uranium Output Rises on Demand</h3>
+      <p>Rising uranium spot prices are reactivating dormant mines in San Juan County as domestic fuel demand climbs alongside new reactor orders.</p>
+      <p class="why-matters">Utah's uranium sector could supply the first wave of domestically-fueled SMRs, keeping the full nuclear supply chain in-state.</p>
+    </div>
+  `;
+  setTimeout(observeFadeIns, 50);
+}
+
+// ── SCROLL FADE-IN ──
+function observeFadeIns() {
+  const els = document.querySelectorAll('.fade-in:not(.visible)');
+  if (!('IntersectionObserver' in window)) {
+    els.forEach(el => el.classList.add('visible'));
+    return;
+  }
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  els.forEach(el => obs.observe(el));
+}
+
+// ── TAG FILTER ──
+function filterTag(el, tag) {
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  // Visual only — real filter would re-fetch or sort DOM
+}
+
+// ── SUBSCRIBE ──
+function handleSubscribe(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('button');
+  btn.textContent = '✓ You\'re in';
+  btn.style.background = '#1a7a3c';
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  observeFadeIns();
+  loadDigest();
+});
 </script>
 </body>
 </html>
