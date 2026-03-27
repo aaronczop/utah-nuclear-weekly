@@ -72,16 +72,17 @@ body {
   overflow: hidden;
 }
 
-/* Utah arch silhouette — decorative SVG inlay */
-.masthead-arch {
-  position: absolute;
-  right: -20px;
-  bottom: 0;
-  height: 100%;
-  width: 340px;
-  opacity: 0.045;
-  pointer-events: none;
-}
+<svg class="masthead-arch" viewBox="0 0 400 500" preserveAspectRatio="xzMidYmax slice">
+  <path d="M400,500 
+           L320,500 
+           C310,400 280,180 200,150 
+           C120,130 90,350 80,500 
+           L0,500 
+           L0,480 
+           C20,350 60,50 200,20 
+           C340,-10 380,350 400,480 Z" 
+        fill="currentColor" />
+</svg>
 
 .eyebrow {
   font-family: var(--font-mono);
