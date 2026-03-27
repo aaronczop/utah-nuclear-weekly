@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Utah Nuclear Weekly</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e0f;
+    --surface: #111618;
+    --border: #1e2d2f;
+    --accent: #00e5c8;
+    --accent2: #ff6b35;
+    --text: #d4e8ea;
+    --muted: #5a7a7e;
+    --danger: #ff4444;
+    --success: #00e5c8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Grid bg */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,200,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,200,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow orb */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0,229,200,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 640px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 2.5rem;
+  }
+
+  .atom-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    animation: spin 20s linear infinite;
+    transform-origin: center;
+    display: inline-block;
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 10vw, 5rem);
+    letter-spacing: 0.05em;
+    line-height: 0.9;
+    color: #fff;
+  }
+
+  h1 span {
+    color: var(--accent);
+    display: block;
+  }
+
+  .subtitle {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 1.75rem;
+    margin-bottom: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+
+  .card-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  /* Config row */
+  .config-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .config-row:last-child { border-bottom: none; }
+
+  .config-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    width: 100px;
+    flex-shrink: 0;
+  }
+
+  .config-value {
+    font-size: 0.9rem;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    background: rgba(0,229,200,0.1);
+    border: 1px solid rgba(0,229,200,0.3);
+    border-radius: 2px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+  }
+
+  /* Status log */
+  .log {
+    background: #050809;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 1rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    line-height: 1.8;
+    min-height: 120px;
+    max-height: 300px;
+    overflow-y: auto;
+    color: var(--muted);
+  }
+
+  .log-line { display: block; }
+  .log-line.success { color: var(--accent); }
+  .log-line.error { color: var(--danger); }
+  .log-line.info { color: #7ab8c0; }
+  .log-line.warn { color: var(--accent2); }
+
+  .log-time {
+    color: #2a4a4e;
+    margin-right: 0.5rem;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+    font-weight: bold;
+    width: 100%;
+    justify-content: center;
+    font-size: 0.85rem;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: #00ffdf;
+    box-shadow: 0 0 20px rgba(0,229,200,0.4);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  /* Pulse dot */
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .status-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* Preview box */
+  .preview {
+    background: #fff;
+    color: #222;
+    border-radius: 4px;
+    padding: 1.5rem;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    margin-top: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+  }
+
+  .preview.visible { display: block; }
+  .preview h2 { font-size: 1.2rem; margin-bottom: 0.5rem; color: #111; }
+  .preview p { margin-bottom: 0.75rem; }
+  .preview h3 { margin: 1rem 0 0.25rem; font-size: 1rem; color: #333; }
+
+  /* Scheduler info */
+  .scheduler-note {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    border-left: 2px solid var(--border);
+  }
+
+  .scheduler-note strong {
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* Divider */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1rem 0;
+  }
+
+  /* Spinner */
+  .spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: rotate 0.6s linear infinite;
+    display: none;
+  }
+  .spinning .spinner { display: inline-block; }
+
+  @keyframes rotate {
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <span class="atom-icon">⚛️</span>
+    <h1>Utah<span>Nuclear</span>Weekly</h1>
+    <p class="subtitle">// automated digest — every sunday — aaron.czop@utah.edu</p>
+  </div>
+
+  <!-- Config summary -->
+  <div class="card">
+    <div class="card-label">// digest.config</div>
+    <div class="config-row">
+      <div class="config-label">recipient</div>
+      <div class="config-value">aaron.czop@utah.edu</div>
+    </div>
+    <div class="config-row">
+      <div class="config-label">schedule</div>
+      <div class="config-value">Sunday <span class="badge">09:00 MST</span></div>
+    </div>
+    <div class="config-row">
+      <div class="config-label">coverage</div>
+      <div class="config-value">All Utah nuclear news</div>
+    </div>
+    <div class="config-row">
+      <div class="config-label">sources</div>
+      <div class="config-value">Live web search + AI synthesis</div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="card">
+    <div class="card-label">// controls</div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="sendNowBtn" onclick="sendDigest()">
+        <span class="spinner" id="spinner"></span>
+        <span id="sendBtnText">⚡ Send digest now (test run)</span>
+      </button>
+      <button class="btn btn-secondary" id="scheduleBtn" onclick="showScheduleInfo()">
+        🕘 How to schedule weekly sends
+      </button>
+    </div>
+
+    <div id="scheduleInfo" style="display:none;">
+      <hr>
+      <div class="scheduler-note">
+        <strong>// OPTION A — GOOGLE APPS SCRIPT (free, no extra software)</strong><br><br>
+        1. Go to <strong>script.google.com</strong> and create a new project<br>
+        2. Paste the generated script (appears after your first test run below)<br>
+        3. Set a trigger: <em>Triggers → Add Trigger → Time-driven → Week timer → Sunday → 9am</em><br>
+        4. Authorize Gmail access — done. Runs automatically every Sunday.<br><br>
+        <strong>// OPTION B — CRON JOB (if you have a server)</strong><br><br>
+        Run <code>0 9 * * 0</code> with a curl call to hit this page's send function.<br><br>
+        <strong>// OPTION C — ZAPIER / MAKE.COM</strong><br>
+        Schedule a weekly webhook that triggers the digest send.
+      </div>
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div class="card">
+    <div class="card-label">// activity.log</div>
+    <div class="status-bar">
+      <span class="pulse-dot" id="statusDot"></span>
+      <span class="status-text" id="statusText">READY — click "Send digest now" to generate and send</span>
+    </div>
+    <div class="log" id="log">
+      <span class="log-line info"><span class="log-time">[INIT]</span> Utah Nuclear Weekly initialized</span>
+      <span class="log-line info"><span class="log-time">[INIT]</span> Recipient: aaron.czop@utah.edu</span>
+      <span class="log-line info"><span class="log-time">[INIT]</span> Coverage: all nuclear topics — energy, waste, policy, SMRs</span>
+      <span class="log-line"><span class="log-time">[WAIT]</span> Awaiting user action...</span>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div class="card" id="previewCard" style="display:none;">
+    <div class="card-label">// email.preview</div>
+    <div class="preview visible" id="previewContent"></div>
+  </div>
+
+</div>
+
+<script>
+const RECIPIENT = "aaron.czop@utah.edu";
+
+function log(msg, type = '') {
+  const logEl = document.getElementById('log');
+  const now = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const line = document.createElement('span');
+  line.className = `log-line ${type}`;
+  line.innerHTML = `<span class="log-time">[${now}]</span> ${msg}`;
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function setStatus(text, active = false) {
+  document.getElementById('statusText').textContent = text;
+  const dot = document.getElementById('statusDot');
+  dot.style.background = active ? 'var(--accent)' : 'var(--muted)';
+}
+
+function setLoading(loading) {
+  const btn = document.getElementById('sendNowBtn');
+  const spinner = document.getElementById('spinner');
+  const btnText = document.getElementById('sendBtnText');
+  btn.disabled = loading;
+  spinner.style.display = loading ? 'inline-block' : 'none';
+  btnText.textContent = loading ? 'Generating digest...' : '⚡ Send digest now (test run)';
+  btn.classList.toggle('spinning', loading);
+}
+
+function showScheduleInfo() {
+  const info = document.getElementById('scheduleInfo');
+  info.style.display = info.style.display === 'none' ? 'block' : 'none';
+}
+
+async function sendDigest() {
+  setLoading(true);
+  setStatus('RUNNING — gathering news...', true);
+  log('Starting digest generation...', 'info');
+  log('Searching for Utah nuclear news (last 7 days)...', 'info');
+
+  try {
+    // Step 1: Use Claude with web search to gather and write digest
+    log('Calling Anthropic API with web_search tool...', 'info');
+
+    const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const weekAgo = new Date(Date.now() - 7*24*60*60*1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    const researchResponse = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 2000,
+        tools: [{ type: "web_search_20250305", name: "web_search" }],
+        system: `You are an expert science and energy journalist who writes a weekly nuclear news digest for Utah. 
+Your job: search for and compile the most important Utah-related nuclear news from the past week.
+
+Topics to cover (search for each): 
+- Utah nuclear energy projects (SMRs, NuScale, TerraPower, etc.)
+- Hill Air Force Base nuclear / energy news  
+- Utah nuclear waste storage (Millard County, EnergySolutions, etc.)
+- Utah nuclear policy (Governor, legislature, PUC)
+- Uranium mining in Utah
+- Any other significant Utah nuclear developments
+
+Write a clean, informative HTML email digest. Format it as proper HTML (no markdown) with:
+- A compelling subject line (output it first on its own line as: SUBJECT: ...)
+- Then the HTML body starting with <div>
+- Use h2 for the title, h3 for each story section
+- Keep each story to 2-3 sentences
+- Include a brief "Why it matters for Utah" note per story
+- End with a short "Looking Ahead" section
+- Professional but engaging tone — readers are informed Utahns interested in nuclear policy, energy, and environment
+
+If there are fewer than 3 stories, include national nuclear news that affects Utah.`,
+        messages: [{
+          role: "user",
+          content: `Today is ${today}. Search for and write this week's Utah Nuclear Weekly digest (covering ${weekAgo} to ${today}). Search thoroughly across multiple topics.`
+        }]
+      })
+    });
+
+    const researchData = await researchResponse.json();
+
+    if (researchData.error) {
+      throw new Error(researchData.error.message);
+    }
+
+    log('Web search complete. Parsing digest...', 'info');
+
+    // Extract text content
+    const fullText = researchData.content
+      .filter(b => b.type === 'text')
+      .map(b => b.text)
+      .join('\n');
+
+    const searchCount = researchData.content.filter(b => b.type === 'tool_use').length;
+    log(`Searched ${searchCount} queries. Digest drafted.`, 'success');
+
+    // Parse subject and body
+    let subject = `Utah Nuclear Weekly — ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
+    let htmlBody = fullText;
+
+    const subjectMatch = fullText.match(/SUBJECT:\s*(.+)/);
+    if (subjectMatch) {
+      subject = subjectMatch[1].trim();
+      htmlBody = fullText.replace(/SUBJECT:.*\n?/, '').trim();
+    }
+
+    // Wrap in nice email HTML if not already
+    if (!htmlBody.includes('<html')) {
+      htmlBody = `
+        <div style="font-family: Georgia, serif; max-width: 620px; margin: 0 auto; color: #222; line-height: 1.7;">
+          <div style="background: #0a3d3a; color: #00e5c8; padding: 1.5rem 2rem; margin-bottom: 1.5rem;">
+            <h1 style="font-size: 2rem; margin: 0; letter-spacing: 0.05em;">⚛️ UTAH NUCLEAR WEEKLY</h1>
+            <p style="margin: 0.25rem 0 0; font-size: 0.85rem; opacity: 0.7;">${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          </div>
+          ${htmlBody}
+          <hr style="border: none; border-top: 1px solid #ddd; margin: 2rem 0;">
+          <p style="font-size: 0.75rem; color: #999;">You're receiving this because you set up Utah Nuclear Weekly. Automated by Claude + Gmail.</p>
+        </div>`;
+    }
+
+    log(`Subject: "${subject}"`, 'info');
+    log('Sending via Gmail...', 'info');
+
+    // Step 2: Send via Gmail MCP
+    const gmailResponse = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        mcp_servers: [{
+          type: "url",
+          url: "https://gmail.mcp.claude.com/mcp",
+          name: "gmail-mcp"
+        }],
+        system: "You are a Gmail sending assistant. When asked to send an email, use the Gmail MCP tool to send it exactly as specified. Confirm success concisely.",
+        messages: [{
+          role: "user",
+          content: `Send an email with these exact details:
+TO: ${RECIPIENT}
+SUBJECT: ${subject}
+BODY (HTML): ${htmlBody}
+
+Send it now using Gmail.`
+        }]
+      })
+    });
+
+    const gmailData = await gmailResponse.json();
+
+    if (gmailData.error) {
+      throw new Error('Gmail send error: ' + gmailData.error.message);
+    }
+
+    const gmailText = gmailData.content.filter(b => b.type === 'text').map(b => b.text).join(' ');
+    const sent = gmailText.toLowerCase().includes('sent') || gmailText.toLowerCase().includes('success') || gmailText.toLowerCase().includes('delivered');
+
+    if (sent) {
+      log(`✓ Email sent to ${RECIPIENT}`, 'success');
+      log('Digest delivery confirmed.', 'success');
+      setStatus('✓ SENT — check your inbox');
+    } else {
+      log('Gmail response: ' + gmailText.substring(0, 120), 'warn');
+      log('Email may have sent — check inbox to confirm', 'warn');
+      setStatus('⚠ CHECK INBOX — send attempted');
+    }
+
+    // Show preview
+    document.getElementById('previewCard').style.display = 'block';
+    document.getElementById('previewContent').innerHTML = `
+      <strong style="font-size:0.75rem; color:#999; display:block; margin-bottom:0.5rem;">Subject: ${subject}</strong>
+      ${htmlBody}
+    `;
+    document.getElementById('previewContent').scrollTop = 0;
+
+    log('Preview rendered below.', 'info');
+
+  } catch (err) {
+    log('ERROR: ' + err.message, 'error');
+    setStatus('ERROR — see log');
+    console.error(err);
+  }
+
+  setLoading(false);
+}
+</script>
+</body>
+</html>
